@@ -1,91 +1,53 @@
 # TMPS - Lab 0
 
-
+Implementing 3 SOLID principles (SRP, OCP, DIP) in a simple, library-themed Python project using a minimal, function-based design.
 
 ## 1. Introduction
 
-This report presents a small Python project that demonstrates three SOLID principles:
+This report describes a compact example that demonstrates three SOLID principles:
 
 - SRP — Single Responsibility Principle
 - OCP — Open/Closed Principle
 - DIP — Dependency Inversion Principle
 
-The example models a minimal order processing flow for a shop: creating an order with products, applying a discount strategy, charging a payment gateway, and generating an invoice.
+Scenario: manage late fees for a library—create a loan with overdue books, apply a fee reduction strategy, charge a payment gateway, and generate a fine receipt. The implementation is single-file and uses plain dicts and functions (no classes, no external libs).
 
 ## 2. Project Goals
 
 - Provide a clear and runnable example for three SOLID principles.
-- Keep the codebase simple, modular, and easy to extend.
-- Use English for code, comments, and documentation.
-
-## 3. Repository Structure
-
-```
-lab-0/
-  main.py                 # Entry point: wires everything for a demo run
-  order_system/
-    __init__.py
-    models.py             # Domain entities: Product, OrderItem, Order (SRP)
-    discounts.py          # Discount abstraction and strategies (OCP)
-    payments.py           # PaymentGateway abstraction + FakePaymentGateway (DIP)
-    invoice.py            # InvoiceGenerator (SRP)
-    processor.py          # OrderProcessor coordinates the flow (SRP + DIP)
-```
-
-## 4. Architecture Overview
-
-The code is split into small modules, each with a single focus:
-
-- models.py: domain data models and basic operations on orders.
-- invoice.py: rendering an invoice summary string for a given order and discount.
-- discounts.py: Discount abstraction plus several strategy implementations.
-- payments.py: Payment gateway abstraction and a fake implementation.
-- processor.py: application service that orchestrates discounting, charging, and invoice generation.
-
-The `main.py` module composes these pieces and runs a short demo.
-
-## 5. SOLID Principles Applied
-
-### 5.1 SRP — Single Responsibility Principle
-
-- Order: stores and manages order content (items, totals). It does not handle payments or presentation.
-- InvoiceGenerator: produces a textual invoice; no business logic about discounts or charging.
-- OrderProcessor: coordinates the workflow (compute total after discount, charge gateway, return invoice).
-
-Why it matters: each class changes for one reason only (e.g., formatting invoice vs. computing totals), reducing coupling and making tests focused.
-
-### 5.2 OCP — Open/Closed Principle
-
-- Discount is an abstract base class.
-- New strategies (e.g., PercentageDiscount, BulkItemDiscount) can be added without changing OrderProcessor or Order.
-
-Why it matters: extension over modification makes the system safer and more maintainable when business rules change.
-
-### 5.3 DIP — Dependency Inversion Principle
-
-- OrderProcessor depends on the PaymentGateway abstraction, not a concrete class.
-- At runtime we inject FakePaymentGateway, but any real gateway can be plugged in without changes to OrderProcessor.
-
-Why it matters: decouples high-level policy (process an order) from low-level details (how to charge), enabling easy substitution and testing.
 
 
-## 6. Example Output
+## 3. Architecture Overview (single file)
 
-```
-INVOICE
-Order ID: <uuid>
-------------------------------
-Mouse x2 @ 25.00 = 50.00
-Keyboard x1 @ 45.00 = 45.00
-Monitor x1 @ 150.00 = 150.00
-------------------------------
-Subtotal: 245.00
-Discount: -24.50
-Total: 220.50
-```
+- Domain (SRP): `create_book`, `new_loan`, `add_loan_item`, `loan_subtotal` (plain dict models and totals)
+- Receipt (SRP): `generate_receipt(loan, reduction_amount)`
+- Reductions (OCP): `no_reduction()`, `percentage_reduction(percent)`, `bulk_item_reduction(min_total_items, reduction_amount)` — each returns a strategy function `fn(loan) -> float`
+- Payments (DIP): `fake_charge(amount) -> (ok: bool, message: str)`
+- Processing (SRP + DIP): `process_fine(loan, reduction_fn, charge_fn)` orchestrates the flow
 
-Note: Exact order ID and totals depend on the selected discount strategy and items.
+`demo()` constructs the data, selects a reduction function, injects a charge function, and prints the fine receipt.
 
-## 7. Conclusion
+## 4. SOLID Principles Applied
 
-This project shows how SRP, OCP, and DIP can be applied in a compact Python codebase. The separation of concerns and clear abstractions make the system easier to understand, extend, and test.
+### 4.1 SRP — Single Responsibility Principle
+
+- Loan-related functions manage data and totals only (`add_loan_item`, `loan_subtotal`).
+- Presentation formats text only (`generate_receipt`).
+- Orchestration coordinates the process only (`process_fine`).
+
+Each unit has one reason to change (data, presentation, or orchestration), keeping concerns separated even in a single file.
+
+### 4.2 OCP — Open/Closed Principle
+
+- Strategy functions are the extension point. Add new reductions by writing a new function `def my_reduction(): return lambda loan: ...` without changing existing code.
+- `process_fine` remains unchanged when adding strategies.
+
+### 4.3 DIP — Dependency Inversion Principle
+
+- `process_fine` depends on abstracted behavior via callables: `reduction_fn` and `charge_fn`.
+- At runtime, we inject `fake_charge` and a chosen reduction function; swapping them requires no changes to `process_fine`.
+
+
+## 5. Conclusion
+
+This single-file implementation still cleanly demonstrates SRP, OCP, and DIP with minimal moving parts. Responsibilities are separated via small functions, extension points are explicit via strategy functions, and high-level orchestration depends on injected callables rather than concretions—making the code easy to extend and test.
