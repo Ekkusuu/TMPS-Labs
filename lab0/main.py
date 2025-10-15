@@ -18,7 +18,7 @@ class DualNotifier(EmailNotifier):
         self._sms.notify(member, message)
 
 def run_demo():
-    notifier = DualNotifier()  # swap for EmailNotifier() or SMSNotifier() easily
+    notifier = DualNotifier()  
     lib = Library(notifier)
 
     lib.add_book("Clean Code", "Robert C. Martin", copies=1)
@@ -28,7 +28,7 @@ def run_demo():
     lib.add_member(alice)
 
     lib.borrow_book("Alice", "Clean Code")
-    lib.borrow_book("Alice", "Clean Code")  # unavailable now
+    lib.borrow_book("Alice", "Clean Code") 
     lib.borrow_book("Alice", "Domain-Driven Design")
     lib.return_book("Alice", "Clean Code")
 

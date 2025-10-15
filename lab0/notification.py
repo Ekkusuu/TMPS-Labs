@@ -1,7 +1,10 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-# no runtime import needed
-Member = "Member"
+# Only import for type checking to avoid runtime circular imports
+if TYPE_CHECKING: 
+    from library import Member
 
 class Notifier(ABC):
     """DIP: Abstraction for notifications used by Library.
