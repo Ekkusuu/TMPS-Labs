@@ -1,6 +1,7 @@
 from lab1.models.book import Book
 
 
+# Pattern: Builder — fluent API for constructing Book instances
 class BookBuilder:
     """Simple Builder for Book objects."""
 

@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 
+# Pattern: Prototype — Book supports cloning via clone()
 class Book:
     """Base Book model."""
 
@@ -17,6 +18,7 @@ class Book:
         return deepcopy(self)
 
 
+# Pattern: Concrete Product — Ebook (created by the Factory Method)
 class Ebook(Book):
     def __init__(self, title: str, author: str, pages: int = 0, file_format: str = "epub"):
         super().__init__(title, author, pages)
@@ -29,6 +31,7 @@ class Ebook(Book):
         )
 
 
+# Pattern: Concrete Product — PaperBook (created by the Factory Method)
 class PaperBook(Book):
     def __init__(self, title: str, author: str, pages: int = 0, hardcover: bool = False):
         super().__init__(title, author, pages)

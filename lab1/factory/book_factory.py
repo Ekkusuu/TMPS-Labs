@@ -1,6 +1,7 @@
 from lab1.models.book import Ebook, PaperBook
 
 
+# Pattern: Factory Method — creates concrete Book types from a kind string
 class BookFactory:
     """Factory Method for creating books based on type string."""
 

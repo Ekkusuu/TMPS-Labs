@@ -1,6 +1,7 @@
 from typing import List
 
 
+# Pattern: Singleton — single shared library instance
 class LibrarySingleton:
     """A minimal Singleton library storing books."""
 
