@@ -1,4 +1,4 @@
-from lab1.factory.book_factory import BookFactory
+from lab1.factory.book_factory import EbookFactory, PaperBookFactory
 from lab1.builder.book_builder import BookBuilder
 from lab1.domain.library_singleton import LibrarySingleton
 from lab1.models.book import Ebook
@@ -8,9 +8,12 @@ def demo():
     lib = LibrarySingleton()
     lib.clear()
 
-    # Factory Method
-    ebook = BookFactory.create_book("ebook", "Factory Patterns in Py", "A. Dev", 120, file_format="pdf")
-    paper = BookFactory.create_book("paper", "Understanding Patterns", "B. Coder", 350, hardcover=True)
+    # Factory Method (full version: abstract creator + concrete creators)
+    ebook_factory = EbookFactory()
+    paper_factory = PaperBookFactory()
+
+    ebook = ebook_factory.create_book("Factory Patterns in Py", "A. Dev", 120, file_format="pdf")
+    paper = paper_factory.create_book("Understanding Patterns", "B. Coder", 350, hardcover=True)
 
     lib.add_book(ebook)
     lib.add_book(paper)
