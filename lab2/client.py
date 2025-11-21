@@ -3,7 +3,7 @@
 from lab2.domain.library import Library
 from lab2.adapter.legacy_notifier import LegacyNotifier
 from lab2.adapter.notifier_adapter import NotifierAdapter
-from lab2.decorator.library_decorator import LibraryLoggerDecorator
+from lab2.decorator.library_decorator import LoggingDecorator, CountingDecorator
 from lab2.facade.library_facade import LibraryFacade
 
 
@@ -11,8 +11,9 @@ def main():
     # Core library
     core_lib = Library()
 
-    # Decorate library to add logging behaviour (Decorator pattern)
-    decorated = LibraryLoggerDecorator(core_lib)
+    # Decorate library: count calls then add logging (two simple decorators)
+    counted = CountingDecorator(core_lib)
+    decorated = LoggingDecorator(counted)
 
     # Legacy notifier (third-party code) + Adapter
     legacy = LegacyNotifier()
@@ -25,9 +26,19 @@ def main():
     facade.add_book_and_notify("Patterns for Humans", "C. Designer", 220)
     facade.add_book_and_notify("Structural Patterns", "D. Architect", 150, notify_recipient="team@local")
 
+    # Example: search (this will exercise the `find` call and increment the counter)
+    matches = facade.find("Patterns")
+    print("\nSearch matches:")
+    for m in matches:
+        print(" -", m)
+
     print("\nBooks in library:")
     for b in facade.list_books():
         print(" -", b)
+
+    # Show counts collected by the counting decorator
+    print("\nOperation counts:")
+    print(counted.counts)
 
 
 if __name__ == "__main__":
